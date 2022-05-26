@@ -20,4 +20,11 @@ const deleteUser = async (user) => {
     }
 };
 
-module.exports = { addUser, deleteUser };
+
+const updateXY = async (user, newUser) => {
+    console.log(newUser)
+    const foundUser = await activeUser.findOne(user).updateOne(newUser)
+    console.log("found user", foundUser)
+}
+
+module.exports = { addUser, deleteUser, updateXY };

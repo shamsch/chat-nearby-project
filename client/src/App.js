@@ -9,20 +9,21 @@ function App() {
     const [location, setLocation] = useState(null);
 
     const joinChat = () => {
-
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition((pos) => {
                 const location = {
-                  x: pos.coords.longitude,
-                  y: pos.coords.latitude 
-                }
+                    x: pos.coords.longitude,
+                    y: pos.coords.latitude,
+                };
                 setLocation(location);
             });
         } else {
             alert("You location is not available");
         }
         
-        socket.emit("create_chat", location);
+        if (location) {
+            socket.emit("create_chat", location);
+        }
     };
 
     return (

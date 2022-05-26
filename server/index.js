@@ -5,7 +5,7 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 const dotenv = require("dotenv");
 const { connection } = require("./database/db.js");
-const { addUser, deleteUser } = require("./controller/controller.js");
+const { addUser, deleteUser, updateXY } = require("./controller/controller.js");
 
 dotenv.config();
 
@@ -27,18 +27,23 @@ const io = new Server(server, {
 io.on("connection", (socket) => { 
     const user = {
         socketID: socket.id,
+        x: "0",
+        y: "0"
     };
 
     addUser(user)
     
 
     socket.on("create_chat", (data) => {
-        socket.join(data);
-        console.log("Joined", data);
+        const userWithLocation = {
+            ... user, ...data
+        }
+        updateXY(user, userWithLocation);
+        console.log("Location data transferred", data);
     });
 
     socket.on("disconnect", () => {
-        deleteUser(user);
+        deleteUser({socketID: user.socketID});
         console.log("user disconnected", socket.id);
     });
 });
