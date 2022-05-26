@@ -1,20 +1,35 @@
-import io from "socket.io-client"
+import { useState } from "react";
+import io from "socket.io-client";
 
-const SERVER_URL = "http://localhost:3002/"
+const SERVER_URL = "http://localhost:3002/";
 
-const socket = io.connect(SERVER_URL)
+const socket = io.connect(SERVER_URL);
 
 function App() {
-  const joinChat = () => {
-    const user = "ROOM1"
-    socket.emit("create_chat", user)
-  }
+    const [location, setLocation] = useState(null);
 
-  return (
-    <div>
-      <button onClick={joinChat}>Join chat</button>
-    </div>
-  );
+    const joinChat = () => {
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                const location = {
+                  x: pos.coords.longitude,
+                  y: pos.coords.latitude 
+                }
+                setLocation(location);
+            });
+        } else {
+            alert("You location is not available");
+        }
+        
+        socket.emit("create_chat", location);
+    };
+
+    return (
+        <div>
+            <button onClick={joinChat}>Join chat</button>
+        </div>
+    );
 }
 
 export default App;
