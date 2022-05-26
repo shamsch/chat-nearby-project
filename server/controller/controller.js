@@ -27,4 +27,14 @@ const updateXY = async (user, newUser) => {
     console.log("found user", foundUser)
 }
 
-module.exports = { addUser, deleteUser, updateXY };
+const getUsers = async () => {
+    try{
+        const users = await activeUser.find();
+        return users; 
+    }catch( error ){
+       console.log("Error getting user in controller", error.message)
+    }
+}
+
+
+module.exports = { addUser, deleteUser, updateXY, getUsers };

@@ -6,6 +6,7 @@ const { Server } = require("socket.io");
 const dotenv = require("dotenv");
 const { connection } = require("./database/db.js");
 const { addUser, deleteUser, updateXY } = require("./controller/controller.js");
+const { findAvailableUser } = require("./logic/findAvailableUser.js");
 
 dotenv.config();
 
@@ -34,13 +35,24 @@ io.on("connection", (socket) => {
     addUser(user)
     
 
-    socket.on("create_chat", (data) => {
+    socket.on("create_chat", async (data) => {
         const userWithLocation = {
             ... user, ...data
         }
-        updateXY(user, userWithLocation);
-        console.log("Location data transferred", data);
+        await updateXY(user, userWithLocation);
+        const userNearBy = await findAvailableUser(userWithLocation); 
+
+        if(userNearBy.length){
+            socket.join(userNearBy[0])
+        }
+        else{
+            socket.join(userWithLocation.socketID)
+        }
     });
+
+    socket.on("message_send", (data)=> {
+        console.log(data)
+    })
 
     socket.on("disconnect", () => {
         deleteUser({socketID: user.socketID});
