@@ -6,8 +6,6 @@ import { Context, socket } from "./context/store";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     <Context.Provider value={socket}>
-        <React.StrictMode>
-            <App />
-        </React.StrictMode>
+        <App />
     </Context.Provider>
 );
