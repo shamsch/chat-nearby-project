@@ -1,11 +1,12 @@
 const mongoose = require("mongoose")
 
-const activeUserSchema = mongoose.Schema({
+const userSchema = mongoose.Schema({
     socketID: String,
     x: String,
     y: String
 });
 
-const activeUser = mongoose.model('activeUser', activeUserSchema);
+const activeUser = mongoose.model('activeUser', userSchema);
+const busyUser = mongoose.model('busyUser', userSchema);
 
-module.exports= {activeUser};
+module.exports= {activeUser, busyUser};

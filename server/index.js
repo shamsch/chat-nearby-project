@@ -5,7 +5,14 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 const dotenv = require("dotenv");
 const { connection } = require("./database/db.js");
-const { addUser, deleteUser, updateXY } = require("./controller/controller.js");
+const {
+    addUser,
+    deleteUser,
+    updateXY,
+    addUserToBusy,
+    deleteUserFromBusy,
+    getAnActiveUser,
+} = require("./controller/controller.js");
 const { findAvailableUser } = require("./logic/findAvailableUser.js");
 
 dotenv.config();
@@ -45,9 +52,23 @@ io.on("connection", (socket) => {
         const room = userNearBy.length
             ? userNearBy[0].socketID
             : userWithLocation.socketID;
-        console.log("room", room)
+        console.log("room", room);
         await socket.join(room);
         await socket.emit("chat_room", room);
+
+        //move both users from active to busy if it's the second user entering the room
+        if(room!=userWithLocation.socketID){
+            //2nd user who just entered the room
+            await deleteUser({ socketID: user.socketID });
+            await addUserToBusy(userWithLocation);
+            //first user who is already in the room and has same socket id as the room name
+            //first get the user from active user collection 
+            const firstUser = await getAnActiveUser(room);
+            console.log(firstUser);
+            await deleteUser({ socketID: room });
+            await addUserToBusy(firstUser);
+        }
+       
     });
 
     socket.on("message_send", (data) => {
@@ -56,7 +77,9 @@ io.on("connection", (socket) => {
     });
 
     socket.on("disconnect", () => {
+        //delete user from either document if it exists upon disconnecting 
         deleteUser({ socketID: user.socketID });
+        deleteUserFromBusy({ socketID: user.socketID });
         console.log("user disconnected", socket.id);
     });
 });

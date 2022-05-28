@@ -1,4 +1,4 @@
-const { activeUser } = require("../model/schema");
+const { activeUser, busyUser } = require("../model/schema");
 
 const addUser = async (user) => {
     const newUser = new activeUser(user);
@@ -21,10 +21,14 @@ const deleteUser = async (user) => {
 };
 
 
+const getAnActiveUser = async (socket) => {
+    const {socketID,x,y} = await activeUser.findOne({socketID: socket});
+    return {socketID, x, y};
+}
+
+
 const updateXY = async (user, newUser) => {
-    console.log(newUser)
     const foundUser = await activeUser.findOne(user).updateOne(newUser)
-    console.log("found user", foundUser)
 }
 
 const getUsers = async () => {
@@ -36,5 +40,24 @@ const getUsers = async () => {
     }
 }
 
+const addUserToBusy = async (user) => {
+    const newUser = new busyUser(user);
+    try {
+        const user = await newUser.save();
+        console.log("Moved user to busy", user);
+    } catch (err) {
+        console.log("Error moving user to busy:", err);
+    }
+    return user;
+};
 
-module.exports = { addUser, deleteUser, updateXY, getUsers };
+const deleteUserFromBusy = async (user) => {
+    try {
+        const deleted = await busyUser.deleteOne(user);
+        console.log("Deleted user from busy users", deleted.deletedCount);
+    } catch (error) {
+        console.log("Error deleting from busy user: ", error);
+    }
+};
+
+module.exports = { addUser, deleteUser, updateXY, getUsers, addUserToBusy, deleteUserFromBusy, getAnActiveUser};

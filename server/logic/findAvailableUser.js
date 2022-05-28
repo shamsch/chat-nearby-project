@@ -29,6 +29,7 @@ const findAvailableUser = async (user) => {
             parseInt(dbUser.y),
             parseInt(dbUser.x)
         );
+        console.log("distance found:", dist);
         return dist<15 && dbUser.socketID != user.socketID;
     });
 
