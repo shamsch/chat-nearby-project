@@ -59,7 +59,6 @@ io.on("connection", (socket) => {
             : userWithLocation.socketID;
         console.log("room", room);
        
-
         //move both users from active to busy if it's the second user entering the room
         if(room!=userWithLocation.socketID){
             //2nd user who just entered the room
@@ -74,11 +73,11 @@ io.on("connection", (socket) => {
         }
 
         socket.join(room);
-        await socket.emit("chat_room", room);
+        await socket.emit("chat_room", {room, ...userWithLocation});
     });
 
     socket.on("message_send", (data) => {
-        io.to(data.room).emit("recieve_message", data.message);
+        io.to(data.room).emit("recieve_message", {...data});
         console.log(data);
     });
 

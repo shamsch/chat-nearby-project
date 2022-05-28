@@ -6,6 +6,7 @@ function App() {
     const [msg, setMsg] = useState("");
     const [allMessage, setAllMessage] = useState([]);
     const [chatRoom, setChatRoom] = useState("");
+    const [selfID, setSelfID] = useState()
     const socket = useContext(Context)
 
     const joinChat = async () => {
@@ -33,12 +34,13 @@ function App() {
         })
 
         socket.on("chat_room", (data) => {
-            setChatRoom(data)
+            setChatRoom(data.room)
+            setSelfID(data.socketID)
         });
     }, [socket]);
 
     const sendMessage = async () => {
-        const data = {message: msg, room: chatRoom}
+        const data = {message: msg, room: chatRoom, owner: selfID}
         await socket.emit("message_send", data);
         setMsg("")
     };
@@ -53,7 +55,14 @@ function App() {
                     onChange={(e) => setMsg(e.target.value)}
                 />
                 <button onClick={sendMessage}>send message</button>
-                {allMessage.map((message,index)=> <p key={index}>{message}</p>)}
+                {allMessage.map((content,index) => { 
+                    if(content.owner===selfID){
+                        return <p key={index} style={{background:"green"}}>{content.message}</p> 
+                    }
+                    else{
+                        return <p key={index} style={{background:"red"}}>{content.message}</p>
+                    }
+                })}
             </div>
         );
     }

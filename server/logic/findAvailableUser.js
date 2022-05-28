@@ -1,7 +1,5 @@
 const { getUsers } = require("../controller/controller");
 
-
-
 const distance = (lat1, lon1, lat2, lon2) => {
     var p = 0.017453292519943295;   
     var c = Math.cos;
