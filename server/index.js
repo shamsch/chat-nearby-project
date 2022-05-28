@@ -25,37 +25,38 @@ const io = new Server(server, {
     },
 });
 
-io.on("connection", (socket) => { 
+io.on("connection", (socket) => {
     const user = {
         socketID: socket.id,
         x: "0",
-        y: "0"
+        y: "0",
     };
 
-    addUser(user)
-    
+    addUser(user);
 
     socket.on("create_chat", async (data) => {
         const userWithLocation = {
-            ... user, ...data
-        }
+            ...user,
+            ...data,
+        };
         await updateXY(user, userWithLocation);
-        const userNearBy = await findAvailableUser(userWithLocation); 
+        const userNearBy = await findAvailableUser(userWithLocation);
 
-        if(userNearBy.length){
-            socket.join(userNearBy[0])
-        }
-        else{
-            socket.join(userWithLocation.socketID)
-        }
+        const room = userNearBy.length
+            ? userNearBy[0].socketID
+            : userWithLocation.socketID;
+        console.log("room", room)
+        socket.join(room);
+        await socket.emit("chat_room", room);
     });
 
-    socket.on("message_send", (data)=> {
-        console.log(data)
-    })
+    socket.on("message_send", (data) => {
+        socket.to().emit("recieve_message", data);
+        console.log(data);
+    });
 
     socket.on("disconnect", () => {
-        deleteUser({socketID: user.socketID});
+        deleteUser({ socketID: user.socketID });
         console.log("user disconnected", socket.id);
     });
 });
