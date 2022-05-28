@@ -26,6 +26,7 @@ function App() {
 
     useEffect(() => {
         socket.on("recieve_message", (data)=>{
+            console.log("got message:", data)
             setAllMessage((prev)=>{
                 return [...prev, data]
             })     

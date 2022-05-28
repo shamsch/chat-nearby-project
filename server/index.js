@@ -14,6 +14,7 @@ const {
     getAnActiveUser,
 } = require("./controller/controller.js");
 const { findAvailableUser } = require("./logic/findAvailableUser.js");
+const { activeUser } = require("./model/schema.js");
 
 dotenv.config();
 
@@ -32,12 +33,16 @@ const io = new Server(server, {
     },
 });
 
+
+
 io.on("connection", (socket) => {
     const user = {
         socketID: socket.id,
         x: "0",
         y: "0",
     };
+
+    
 
     addUser(user);
 
@@ -53,8 +58,7 @@ io.on("connection", (socket) => {
             ? userNearBy[0].socketID
             : userWithLocation.socketID;
         console.log("room", room);
-        await socket.join(room);
-        await socket.emit("chat_room", room);
+       
 
         //move both users from active to busy if it's the second user entering the room
         if(room!=userWithLocation.socketID){
@@ -68,11 +72,13 @@ io.on("connection", (socket) => {
             await deleteUser({ socketID: room });
             await addUserToBusy(firstUser);
         }
-       
+
+        socket.join(room);
+        await io.emit("chat_room", room);
     });
 
     socket.on("message_send", (data) => {
-        socket.to(data.room).emit("recieve_message", data.message);
+        io.to(data.room).emit("recieve_message", data.message);
         console.log(data);
     });
 
@@ -83,6 +89,7 @@ io.on("connection", (socket) => {
         console.log("user disconnected", socket.id);
     });
 });
+
 
 server.listen(PORT, () => {
     console.log("Server running on", PORT);
