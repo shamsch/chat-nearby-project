@@ -74,7 +74,7 @@ io.on("connection", (socket) => {
         }
 
         socket.join(room);
-        await io.emit("chat_room", room);
+        await socket.emit("chat_room", room);
     });
 
     socket.on("message_send", (data) => {
