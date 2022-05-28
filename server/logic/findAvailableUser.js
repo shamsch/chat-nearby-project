@@ -1,36 +1,29 @@
 const { getUsers } = require("../controller/controller");
 
-const deg2rad = (deg) => {
-    return deg * (Math.PI / 180);
-};
 
-const getDistanceFromLatLon = (lat1, lon1, lat2, lon2) => {
-    var R = 6371;
-    var dLat = deg2rad(lat2 - lat1);
-    var dLon = deg2rad(lon2 - lon1);
-    var a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(deg2rad(lat1)) *
-            Math.cos(deg2rad(lat2)) *
-            Math.sin(dLon / 2) *
-            Math.sin(dLon / 2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var dInKM = R * c; // Distance in km
-    return dInKM * 1000;
-};
+
+const distance = (lat1, lon1, lat2, lon2) => {
+    var p = 0.017453292519943295;   
+    var c = Math.cos;
+    var a = 0.5 - c((lat2 - lat1) * p)/2 + 
+            c(lat1 * p) * c(lat2 * p) * 
+            (1 - c((lon2 - lon1) * p))/2;
+  
+    return 12742 * Math.asin(Math.sqrt(a))*1000; 
+  }
 
 const findAvailableUser = async (user) => {
     const allActiveUser = await getUsers();
 
     const closeByUser = allActiveUser.filter((dbUser) => {
-        const dist = getDistanceFromLatLon(
-            parseInt(user.y),
-            parseInt(user.x),
-            parseInt(dbUser.y),
-            parseInt(dbUser.x)
+        const dist = distance(
+            parseFloat(user.y),
+            parseFloat(user.x),
+            parseFloat(dbUser.y),
+            parseFloat(dbUser.x)
         );
-        console.log("distance found:", dist);
-        return dist<15 && dbUser.socketID != user.socketID;
+        console.log("distance:",dist)
+        return dist<2 && dbUser.socketID != user.socketID;
     });
 
     return closeByUser; 
