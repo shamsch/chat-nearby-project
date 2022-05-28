@@ -5,8 +5,9 @@ function App() {
     const [chat, setChat] = useState(false);
     const [msg, setMsg] = useState("");
     const [allMessage, setAllMessage] = useState([]);
-    const [chatRoom, setChatRoom] = useState("");
-    const [selfID, setSelfID] = useState()
+    const [chatRoom, setChatRoom] = useState(null);
+    const [selfID, setSelfID] = useState(null)
+    const [secondUser, setSecondUser] = useState(null)
     const socket = useContext(Context)
 
     const joinChat = async () => {
@@ -35,9 +36,25 @@ function App() {
 
         socket.on("chat_room", (data) => {
             setChatRoom(data.room)
-            setSelfID(data.socketID)
+            setSelfID(data.socketID)  
         });
+
+        
     }, [socket]);
+
+    useEffect(()=>{
+        //if first user, listen for second user
+        if(chatRoom && selfID && chatRoom===selfID){
+            socket.on("2nd_user", (data)=> {
+                setSecondUser(data)
+            })
+        }
+        //else check, if you are the second user yourself in which case your second user is the room which is first user
+        else if(chatRoom && selfID && chatRoom!==selfID){
+            setSecondUser(chatRoom)
+        } 
+    }, [chatRoom, socket, selfID])
+
 
     const sendMessage = async () => {
         const data = {message: msg, room: chatRoom, owner: selfID}
@@ -49,6 +66,7 @@ function App() {
         return (
             <div>
                 <h1>chat room: {chatRoom}</h1>
+                {secondUser? null: <p>waiting for user...</p>}
                 <input
                     type="text"
                     value={msg}

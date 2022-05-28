@@ -20,7 +20,6 @@ const findAvailableUser = async (user) => {
             parseFloat(dbUser.y),
             parseFloat(dbUser.x)
         );
-        console.log("distance:",dist)
         return dist<2 && dbUser.socketID != user.socketID;
     });
 

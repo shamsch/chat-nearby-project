@@ -60,6 +60,7 @@ io.on("connection", (socket) => {
         console.log("room", room);
        
         //move both users from active to busy if it's the second user entering the room
+        //inform first user that he is connected to second user
         if(room!=userWithLocation.socketID){
             //2nd user who just entered the room
             await deleteUser({ socketID: user.socketID });
@@ -67,9 +68,11 @@ io.on("connection", (socket) => {
             //first user who is already in the room and has same socket id as the room name
             //first get the user from active user collection 
             const firstUser = await getAnActiveUser(room);
-            console.log(firstUser);
             await deleteUser({ socketID: room });
             await addUserToBusy(firstUser);
+
+            //emitting to first user that second user is online 
+            socket.to(room).emit("2nd_user", userWithLocation.socketID)
         }
 
         socket.join(room);
