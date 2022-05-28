@@ -41,7 +41,6 @@ function App() {
         const data = {message: msg, room: chatRoom}
         await socket.emit("message_send", data);
         setMsg("")
-        setAllMessage((prev)=> [...prev, data.message])
     };
 
     if (chat) {
