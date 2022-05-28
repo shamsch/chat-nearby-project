@@ -46,12 +46,12 @@ io.on("connection", (socket) => {
             ? userNearBy[0].socketID
             : userWithLocation.socketID;
         console.log("room", room)
-        socket.join(room);
+        await socket.join(room);
         await socket.emit("chat_room", room);
     });
 
     socket.on("message_send", (data) => {
-        socket.to().emit("recieve_message", data);
+        socket.to(data.room).emit("recieve_message", data.message);
         console.log(data);
     });
 

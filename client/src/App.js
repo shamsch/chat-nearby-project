@@ -23,17 +23,24 @@ function App() {
         }
     };
 
+
     useEffect(() => {
+        socket.on("recieve_message", (data)=>{
+            setAllMessage((prev)=>{
+                return [...prev, data]
+            })     
+        })
+
         socket.on("chat_room", (data) => {
-            console.log(data)
             setChatRoom(data)
         });
     }, [socket]);
 
     const sendMessage = async () => {
-        await socket.emit("message_send", msg);
-        setAllMessage(...allMessage, msg);
+        const data = {message: msg, room: chatRoom}
+        await socket.emit("message_send", data);
         setMsg("")
+        setAllMessage((prev)=> [...prev, data.message])
     };
 
     if (chat) {
