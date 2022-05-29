@@ -15,6 +15,7 @@ const {
 } = require("./controller/controller.js");
 const { findAvailableUser } = require("./logic/findAvailableUser.js");
 const { activeUser } = require("./model/schema.js");
+const { emit } = require("process");
 
 dotenv.config();
 
@@ -83,6 +84,11 @@ io.on("connection", (socket) => {
         io.to(data.room).emit("recieve_message", {...data});
         console.log(data);
     });
+
+    //typing status 
+    socket.on("self_typing", (data)=>{
+        io.to(data.room).emit("other_typing", data)   
+    })
 
     socket.on("disconnect", () => {
         //delete user from either document if it exists upon disconnecting 

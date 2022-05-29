@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Context } from "./context/store";
 
 function App() {
@@ -8,6 +8,8 @@ function App() {
     const [chatRoom, setChatRoom] = useState(null);
     const [selfID, setSelfID] = useState(null)
     const [secondUser, setSecondUser] = useState(null)
+    const [isTyping, setIsTyping] = useState (false)
+    const selfIDRef = useRef()
     const socket = useContext(Context)
 
     const joinChat = async () => {
@@ -36,9 +38,15 @@ function App() {
 
         socket.on("chat_room", (data) => {
             setChatRoom(data.room)
-            setSelfID(data.socketID)  
+            setSelfID(data.socketID)
+            selfIDRef.current= data.socketID  
         });
 
+        socket.on("other_typing", (data) => {
+            if(data.user !== selfIDRef.current){
+                setIsTyping((prev)=> prev? prev: true)
+            }
+        })
         
     }, [socket]);
 
@@ -62,15 +70,28 @@ function App() {
         setMsg("")
     };
 
+    const handleTyping = (e) => {
+        setMsg(e.target.value)
+        const data = {room: chatRoom, user: selfID}
+        socket.emit("self_typing", data)
+    }
+
+    if(isTyping){
+        setInterval(()=>{
+            setIsTyping(false)
+        }, 5000)
+    }
+
     if (chat) {
         return (
             <div>
                 <h1>chat room: {chatRoom}</h1>
                 {secondUser? null: <p>waiting for user...</p>}
+                {isTyping? <p>other user is typing</p> : null}
                 <input
                     type="text"
                     value={msg}
-                    onChange={(e) => setMsg(e.target.value)}
+                    onChange={(e) => handleTyping(e)}
                 />
                 <button onClick={sendMessage}>send message</button>
                 {allMessage.map((content,index) => { 
