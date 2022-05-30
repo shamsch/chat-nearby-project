@@ -9,7 +9,9 @@ function App() {
     const [selfID, setSelfID] = useState(null)
     const [secondUser, setSecondUser] = useState(null)
     const [isTyping, setIsTyping] = useState (false)
+    const [chatAlive, setChatAlive] = useState(true);
     const selfIDRef = useRef()
+    const secondUserRef = useRef()
     const socket = useContext(Context)
 
     const joinChat = async () => {
@@ -47,6 +49,12 @@ function App() {
                 setIsTyping((prev)=> prev? prev: true)
             }
         })
+
+        socket.on("user_disconnect", (data)=>{
+            if(data === secondUserRef.current){
+                setChatAlive(false)
+            }
+        })
         
     }, [socket]);
 
@@ -55,11 +63,13 @@ function App() {
         if(chatRoom && selfID && chatRoom===selfID){
             socket.on("2nd_user", (data)=> {
                 setSecondUser(data)
+                secondUserRef.current = data
             })
         }
         //else check, if you are the second user yourself in which case your second user is the room which is first user
         else if(chatRoom && selfID && chatRoom!==selfID){
             setSecondUser(chatRoom)
+            secondUserRef.current = chatRoom
         } 
     }, [chatRoom, socket, selfID])
 
@@ -87,6 +97,7 @@ function App() {
             <div>
                 <h1>chat room: {chatRoom}</h1>
                 {secondUser? null: <p>waiting for user...</p>}
+                {chatAlive? null: <p>user disconnected</p>}
                 {isTyping? <p>other user is typing</p> : null}
                 <input
                     type="text"
