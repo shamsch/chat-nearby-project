@@ -42,9 +42,6 @@ io.on("connection", (socket) => {
         x: "0",
         y: "0",
     };
-
-    
-
     addUser(user);
 
     socket.on("create_chat", async (data) => {
