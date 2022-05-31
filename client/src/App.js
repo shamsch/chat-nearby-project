@@ -10,6 +10,7 @@ function App() {
     const [secondUser, setSecondUser] = useState(null)
     const [isTyping, setIsTyping] = useState (false)
     const [chatAlive, setChatAlive] = useState(true);
+    const [userCount, setUserCount] = useState(0)
     const selfIDRef = useRef()
     const secondUserRef = useRef()
     const socket = useContext(Context)
@@ -55,6 +56,10 @@ function App() {
                 setChatAlive(false)
             }
         })
+
+        socket.on("user_count", (data)=>{
+           setUserCount(data)
+        })
         
     }, [socket]);
 
@@ -96,6 +101,7 @@ function App() {
         return (
             <div>
                 <h1>chat room: {chatRoom}</h1>
+                {userCount? <p>People online {userCount}</p>: null}
                 {secondUser? null: <p>waiting for user...</p>}
                 {chatAlive? null: <p>user disconnected</p>}
                 {isTyping? <p>other user is typing</p> : null}
@@ -118,6 +124,7 @@ function App() {
     }
     return (
         <div>
+            {userCount? <p>People online {userCount}</p>: null}
             <button onClick={joinChat}>Join chat</button>
         </div>
     );
