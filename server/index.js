@@ -14,14 +14,14 @@ const {
     getAnActiveUser,
 } = require("./controller/controller.js");
 const { findAvailableUser } = require("./logic/findAvailableUser.js");
-const { activeUser } = require("./model/schema.js");
-const { emit } = require("process");
 
 dotenv.config();
+
 
 const PORT = process.env.PORT || 3001;
 const DB_USER = process.env.DB_USER;
 const DB_PASS = process.env.DB_PASS;
+
 
 app.use(cors);
 
@@ -34,7 +34,7 @@ const io = new Server(server, {
     },
 });
 
-
+let userCount = 0; 
 
 io.on("connection", (socket) => {
     const user = {
@@ -42,7 +42,10 @@ io.on("connection", (socket) => {
         x: "0",
         y: "0",
     };
+    
     addUser(user);
+    userCount+=1;
+    io.emit("user_count", userCount)
 
     socket.on("create_chat", async (data) => {
         const userWithLocation = {
@@ -91,7 +94,12 @@ io.on("connection", (socket) => {
         //delete user from either document if it exists upon disconnecting 
         deleteUser({ socketID: user.socketID });
         deleteUserFromBusy({ socketID: user.socketID });
+        
         io.emit("user_disconnect", socket.id)
+        
+        userCount-=1
+        io.emit("user_count", userCount)
+        
         console.log("user disconnected", socket.id);
     });
 });
