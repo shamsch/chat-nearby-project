@@ -37,7 +37,7 @@ function App() {
             setAllMessage((prev) => {
                 return [...prev, data];
             });
-            
+
             //on getting a message 
             setIsTyping(false);
             isTypingRef.current=false; 
@@ -111,9 +111,9 @@ function App() {
             <div>
                 <h1>chat room: {chatRoom}</h1>
                 {userCount ? <p>People online {userCount}</p> : null}
-                {secondUser ? null : <p>waiting for user...</p>}
+                {secondUser ? null : <p>Waiting for user...</p>}
                 {chatAlive ? null : <p>user disconnected</p>}
-                {isTyping ? <p>other user is typing</p> : null}
+                {isTyping ? <p>Other user is typing ... </p> : null}
                 <input
                     type="text"
                     value={msg}
