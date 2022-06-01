@@ -1,19 +1,21 @@
-import React, { useContext, useEffect } from "react";
-import { useStore } from "../zustand/zustandStore";
-import { Context } from "../context/store";
+import React,  {useEffect } from "react";
+import { useStore } from "../zustand/store";
 import shallow from "zustand/shallow";
 
 export const JoinChat = () => {
-	const [userCount, setUserCount] = useStore((state) => [state.userCount, state.setUserCount], shallow);
-  const setChat = useStore ((state) => state.setChat)
-  const socket = useContext(Context);
+	const [userCount, setUserCount] = useStore(
+		(state) => [state.userCount, state.setUserCount],
+		shallow
+	);
+	const setChat = useStore((state) => state.setChat);
+	const socket = useStore((state) => state.socket);
 
-  useEffect(()=>{
-    socket.on("user_count", (data) => {
-      console.log('user count run in join chat')
+	useEffect(() => {
+		socket.on("user_count", (data) => {
+			console.log("user count run in join chat");
 			setUserCount(data);
 		});
-  }, [socket, setUserCount])
+	}, [socket, setUserCount]);
 
 	const joinChat = async () => {
 		if ("geolocation" in navigator) {

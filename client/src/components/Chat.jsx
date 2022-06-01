@@ -1,6 +1,5 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import { Context } from "../context/store";
-import { useStore } from "../zustand/zustandStore";
+import { useEffect, useRef, useState } from "react";
+import { useStore } from "../zustand/store";
 import shallow from "zustand/shallow";
 
 function Chat() {
@@ -26,6 +25,7 @@ function Chat() {
 		(state) => [state.chatAlive, state.setChatAlive],
 		shallow
 	);
+	const socket = useStore((state)=> state.socket);
 
 	//local state
 	const [msg, setMsg] = useState("");
@@ -37,7 +37,7 @@ function Chat() {
 	const isTypingRef = useRef();
 	const selfIDRef = useRef();
 	const secondUserRef = useRef();
-	const socket = useContext(Context);
+	
 
 	useEffect(() => {
 		socket.on("recieve_message", (data) => {

@@ -1,4 +1,5 @@
 import create from 'zustand'
+import { socket } from '../socket.io/connection'
 
 export const useStore = create(set => ({
   chat: false,
@@ -8,6 +9,7 @@ export const useStore = create(set => ({
   userCount: 0,
   setUserCount: (userCount) => set({userCount}),
   chatAlive: true, 
-  setChatAlive: (chatAlive) => set({chatAlive}) 
+  setChatAlive: (chatAlive) => set({chatAlive}), 
+  socket: socket, 
 }))
 

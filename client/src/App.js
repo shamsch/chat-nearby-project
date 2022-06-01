@@ -1,4 +1,4 @@
-import { useStore } from "./zustand/zustandStore";
+import { useStore } from "./zustand/store";
 import { Navigate, Routes, Route } from "react-router-dom";
 import ChatPage from "./pages/ChatPage";
 import { StartChatPage } from "./pages/StartChatPage";
