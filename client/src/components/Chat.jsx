@@ -7,6 +7,9 @@ function Chat() {
 	// const [chat, setChat] = useState(false);
 	// const [allMessage, setAllMessage] = useState([]);
 	// const [userCount, setUserCount] = useState(0);
+	//const [chatAlive, setChatAlive] = useState(true);
+
+	//global states
 	const [allMessage, setAllMessage] = useStore(
 		(state) => [state.allMessage, state.setAllMessage],
 		shallow
@@ -19,12 +22,18 @@ function Chat() {
 		(state) => [state.userCount, state.setUserCount],
 		shallow
 	);
+	const [chatAlive, setChatAlive] = useStore(
+		(state) => [state.chatAlive, state.setChatAlive],
+		shallow
+	);
+
+	//local state
 	const [msg, setMsg] = useState("");
 	const [chatRoom, setChatRoom] = useState(null);
 	const [selfID, setSelfID] = useState(null);
 	const [secondUser, setSecondUser] = useState(null);
 	const [isTyping, setIsTyping] = useState(false);
-	const [chatAlive, setChatAlive] = useState(true);
+
 	const isTypingRef = useRef();
 	const selfIDRef = useRef();
 	const secondUserRef = useRef();
@@ -65,12 +74,11 @@ function Chat() {
 				setChatAlive(false);
 			}
 		});
-	
-    socket.on("user_count", (data) => {
+
+		socket.on("user_count", (data) => {
 			setUserCount(data);
 		});
-
-	}, [socket, setAllMessage, setUserCount]);
+	}, [socket, setAllMessage, setUserCount, setChatAlive]);
 
 	useEffect(() => {
 		//if first user, listen for second user
@@ -103,14 +111,23 @@ function Chat() {
 		socket.emit("self_typing", data);
 	};
 
-	console.log(chat);
+  const handleClick = () => {
+    setChat(false)
+    setChatAlive(true)
+  }
+ 
 
 	return (
 		<div>
 			<h1>chat room: {chatRoom}</h1>
 			{userCount ? <p>People online {userCount}</p> : null}
 			{secondUser ? null : <p>Waiting for user...</p>}
-			{chatAlive ? null : <p>user disconnected</p>}
+			{chatAlive ? null : (
+				<div>
+					user disconnected, to go back to start{" "}
+					<button onClick={handleClick}>click here</button>
+				</div>
+			)}
 			{isTyping ? <p>Other user is typing ... </p> : null}
 			<input type="text" value={msg} onChange={(e) => handleTyping(e)} />
 			<button onClick={sendMessage}>send message</button>
