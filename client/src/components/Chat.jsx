@@ -9,8 +9,8 @@ function Chat() {
 	//const [chatAlive, setChatAlive] = useState(true);
 
 	//global states
-	const [allMessage, setAllMessage] = useStore(
-		(state) => [state.allMessage, state.setAllMessage],
+	const [allMessage, setAllMessage, clearAllMessage] = useStore(
+		(state) => [state.allMessage, state.setAllMessage, state.clearAllMessage],
 		shallow
 	);
 	const [chat, setChat] = useStore(
@@ -114,6 +114,7 @@ function Chat() {
   const handleClick = () => {
     setChat(false)
     setChatAlive(true)
+	clearAllMessage()
   }
  
 
