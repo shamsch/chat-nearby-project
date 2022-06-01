@@ -1,8 +1,11 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { Context } from "./context/store";
+import { useStore } from "./zustand/zustandStore";
+import shallow from 'zustand/shallow'
 
 function App() {
-    const [chat, setChat] = useState(false);
+    // const [chat, setChat] = useState(false);
+    const [chat, setChat] = useStore(state => [state.chat, state.setChat], shallow) 
     const [msg, setMsg] = useState("");
     const [allMessage, setAllMessage] = useState([]);
     const [chatRoom, setChatRoom] = useState(null);
@@ -106,6 +109,7 @@ function App() {
         socket.emit("self_typing", data);
     };
 
+    console.log(chat)
     if (chat) {
         return (
             <div>
