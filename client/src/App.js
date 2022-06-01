@@ -5,9 +5,10 @@ import shallow from 'zustand/shallow'
 
 function App() {
     // const [chat, setChat] = useState(false);
+    // const [allMessage, setAllMessage] = useState([]);
+    const [allMessage, setAllMessage] = useStore(state => [state.allMessage, state.setAllMessage], shallow) 
     const [chat, setChat] = useStore(state => [state.chat, state.setChat], shallow) 
     const [msg, setMsg] = useState("");
-    const [allMessage, setAllMessage] = useState([]);
     const [chatRoom, setChatRoom] = useState(null);
     const [selfID, setSelfID] = useState(null);
     const [secondUser, setSecondUser] = useState(null);
@@ -37,9 +38,7 @@ function App() {
     useEffect(() => {
         socket.on("recieve_message", (data) => {
             console.log("got message:", data);
-            setAllMessage((prev) => {
-                return [...prev, data];
-            });
+            setAllMessage(data);
 
             //on getting a message 
             setIsTyping(false);
@@ -76,7 +75,7 @@ function App() {
         socket.on("user_count", (data) => {
             setUserCount(data);
         });
-    }, [socket]);
+    }, [socket, setAllMessage]);
 
     useEffect(() => {
         //if first user, listen for second user
