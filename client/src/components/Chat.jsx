@@ -65,10 +65,11 @@ function Chat() {
 				setChatAlive(false);
 			}
 		});
-
-		socket.on("user_count", (data) => {
+	
+    socket.on("user_count", (data) => {
 			setUserCount(data);
 		});
+
 	}, [socket, setAllMessage, setUserCount]);
 
 	useEffect(() => {
