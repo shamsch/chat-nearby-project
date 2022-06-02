@@ -123,11 +123,10 @@ function Chat() {
 	return (
 		<div>
 			<h1>chat room: {chatRoom}</h1>
-			{userCount ? <p>People online {userCount}</p> : null}
 			{secondUser ? null : <p>Waiting for user...</p>}
 			{chatAlive ? null : (
 				<div>
-					user disconnected, to go back to start{" "}
+					user disconnected, to go back to start
 					<button onClick={handleClick}>click here</button>
 				</div>
 			)}

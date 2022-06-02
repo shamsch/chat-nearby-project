@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useStore } from "../zustand/store";
 import shallow from "zustand/shallow";
-import { Grid } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 
 export const JoinChat = () => {
 	const [userCount, setUserCount] = useStore(
@@ -43,8 +43,10 @@ export const JoinChat = () => {
 			style={{ minHeight: "100vh" }}
 		>
 			<Grid item xs="auto">
-				{userCount ? <p>People online {userCount}</p> : null}
-				<button onClick={joinChat}>Join chat</button>
+				
+				<Button variant="contained" onClick={joinChat}>
+					Join chat
+				</Button>
 			</Grid>
 		</Grid>
 	);
