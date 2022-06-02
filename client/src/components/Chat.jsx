@@ -111,10 +111,12 @@ function Chat() {
 		socket.emit("self_typing", data);
 	};
 
-  const handleClick = () => {
-    setChat(false)
+  const handleClick = () => {  
+    socket.disconnect()
+	setChat(false)
     setChatAlive(true)
 	clearAllMessage()
+	socket.connect()
   }
  
 
