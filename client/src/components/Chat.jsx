@@ -1,6 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { useStore } from "../zustand/store";
 import shallow from "zustand/shallow";
+import { Box, Container } from "@mui/system";
+import {
+	Button,
+	Divider,
+	FormControl,
+	Grid,
+	IconButton,
+	List,
+	ListItem,
+	ListItemText,
+	Paper,
+	TextField,
+	Typography,
+} from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import './Chat.css';
 
 function Chat() {
 	// const [chat, setChat] = useState(false);
@@ -25,7 +41,7 @@ function Chat() {
 		(state) => [state.chatAlive, state.setChatAlive],
 		shallow
 	);
-	const socket = useStore((state)=> state.socket);
+	const socket = useStore((state) => state.socket);
 
 	//local state
 	const [msg, setMsg] = useState("");
@@ -37,7 +53,7 @@ function Chat() {
 	const isTypingRef = useRef();
 	const selfIDRef = useRef();
 	const secondUserRef = useRef();
-	
+	const scrollRef = useRef(null);
 
 	useEffect(() => {
 		socket.on("recieve_message", (data) => {
@@ -47,6 +63,9 @@ function Chat() {
 			//on getting a message
 			setIsTyping(false);
 			isTypingRef.current = false;
+			if(scrollRef.current) {
+                scrollRef.current.scrollIntoView({ behavior: 'smooth'});
+            }
 		});
 
 		socket.on("chat_room", (data) => {
@@ -111,44 +130,84 @@ function Chat() {
 		socket.emit("self_typing", data);
 	};
 
-  const handleClick = () => {  
-    socket.disconnect()
-	setChat(false)
-    setChatAlive(true)
-	clearAllMessage()
-	socket.connect()
-  }
- 
+	const handleClick = () => {
+		socket.disconnect();
+		setChat(false);
+		setChatAlive(true);
+		clearAllMessage();
+		socket.connect();
+	};
+
+	const listAllMessage = allMessage.map((content, index) => {
+		if (content.owner === selfID) {
+			return (
+				<ListItem key={index}>
+					<ListItemText sx={{ textAlign: "right", background: "#F0F8FF" }}>
+						{content.message}
+					</ListItemText>
+				</ListItem>
+			);
+		} else {
+			return (
+				<ListItem key={index}>
+					<ListItemText sx={{ textAlign: "left", background: "#6CB4EE" }}>
+						{content.message}
+					</ListItemText>
+				</ListItem>
+			);
+		}
+	});
+
+	console.log("chat room:", chatRoom);
 
 	return (
-		<div>
-			<h1>chat room: {chatRoom}</h1>
-			{secondUser ? null : <p>Waiting for user...</p>}
-			{chatAlive ? null : (
-				<div>
-					user disconnected, to go back to start
-					<button onClick={handleClick}>click here</button>
-				</div>
-			)}
-			{isTyping ? <p>Other user is typing ... </p> : null}
-			<input type="text" value={msg} onChange={(e) => handleTyping(e)} />
-			<button onClick={sendMessage}>send message</button>
-			{allMessage.map((content, index) => {
-				if (content.owner === selfID) {
-					return (
-						<p key={index} style={{ background: "green" }}>
-							{content.message}
-						</p>
-					);
-				} else {
-					return (
-						<p key={index} style={{ background: "red" }}>
-							{content.message}
-						</p>
-					);
-				}
-			})}
-		</div>
+		<Container>
+			<Paper elevation={5}>
+				<Box p={3}>
+					<Typography>Welcome to chat!</Typography>
+					{secondUser ? null : <Typography>Waiting for user...</Typography>}
+					{chatAlive ? null : (
+						<Box marginBottom={2}>
+							<Typography>
+								User disconnected, to go back to start{" "}
+								<Button variant="contained" onClick={handleClick}>
+									click here
+								</Button>
+							</Typography>
+						</Box>
+					)}
+					<Divider />
+					<Grid container spacing={4} alignItems="center">
+						<Grid id="chat-window" xs={12} item>
+							<List id="chat-window-messages">
+								{listAllMessage}
+								<ListItem ref={scrollRef}></ListItem>
+							</List>
+						</Grid>
+						<Grid xs={10} item>
+							<FormControl fullWidth>
+								<TextField
+									onChange={(e) => handleTyping(e)}
+									value={msg}
+									label="Start chatting..."
+									variant="outlined"
+								/>
+							</FormControl>
+						</Grid>
+						<Grid xs={2} item>
+							<IconButton
+								onClick={sendMessage}
+								aria-label="send"
+								color="primary"
+							>
+								<SendIcon />
+							</IconButton>
+						</Grid>
+					</Grid>
+					{isTyping ? <Typography fontSize={12} marginLeft={2}>Other user is typing ... </Typography> : null}
+				</Box>
+			</Paper>
+		</Container>
 	);
 }
 
