@@ -54,7 +54,7 @@ function Chat() {
 	const isTypingRef = useRef();
 	const selfIDRef = useRef();
 	const secondUserRef = useRef();
-	const scrollRef = useRef(null);
+	const scrollRef = useRef();
 
 	const navigate = useNavigate();
 
@@ -66,9 +66,6 @@ function Chat() {
 			//on getting a message
 			setIsTyping(false);
 			isTypingRef.current = false;
-			if(scrollRef.current) {
-                scrollRef.current.scrollIntoView({ behavior: 'smooth'});
-            }
 		});
 
 		socket.on("chat_room", (data) => {
@@ -101,6 +98,13 @@ function Chat() {
 			setUserCount(data);
 		});
 	}, [socket, setAllMessage, setUserCount, setChatAlive]);
+
+	//scroll into view effect 
+	useEffect(()=>{
+		if(scrollRef.current) {
+			scrollRef.current.scrollIntoView({ behavior: 'smooth'});
+		}
+	}, [allMessage])
 
 	useEffect(() => {
 		//if first user, listen for second user
@@ -180,7 +184,8 @@ function Chat() {
 						<Grid id="chat-window" xs={12} item>
 							<List id="chat-window-messages">
 								{listAllMessage}
-								<ListItem ref={scrollRef}></ListItem>
+								<ListItem ref={scrollRef}>
+								</ListItem>
 							</List>
 						</Grid>
 						<Grid xs={10} item>
