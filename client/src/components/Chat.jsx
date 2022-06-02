@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import './Chat.css';
+import { useNavigate } from "react-router-dom";
 
 function Chat() {
 	// const [chat, setChat] = useState(false);
@@ -54,6 +55,8 @@ function Chat() {
 	const selfIDRef = useRef();
 	const secondUserRef = useRef();
 	const scrollRef = useRef(null);
+
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		socket.on("recieve_message", (data) => {
@@ -131,11 +134,7 @@ function Chat() {
 	};
 
 	const handleClick = () => {
-		socket.disconnect();
-		setChat(false);
-		setChatAlive(true);
-		clearAllMessage();
-		socket.connect();
+		navigate(0)
 	};
 
 	const listAllMessage = allMessage.map((content, index) => {
