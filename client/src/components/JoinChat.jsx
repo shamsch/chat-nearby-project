@@ -1,6 +1,7 @@
-import React,  {useEffect } from "react";
+import React, { useEffect } from "react";
 import { useStore } from "../zustand/store";
 import shallow from "zustand/shallow";
+import { Grid } from "@mui/material";
 
 export const JoinChat = () => {
 	const [userCount, setUserCount] = useStore(
@@ -33,9 +34,18 @@ export const JoinChat = () => {
 	};
 
 	return (
-		<div>
-			{userCount ? <p>People online {userCount}</p> : null}
-			<button onClick={joinChat}>Join chat</button>
-		</div>
+		<Grid
+			container
+			spacing={0}
+			direction="column"
+			alignItems="center"
+			justifyContent="center"
+			style={{ minHeight: "100vh" }}
+		>
+			<Grid item xs="auto">
+				{userCount ? <p>People online {userCount}</p> : null}
+				<button onClick={joinChat}>Join chat</button>
+			</Grid>
+		</Grid>
 	);
 };
