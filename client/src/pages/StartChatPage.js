@@ -1,8 +1,10 @@
-import React from 'react'
-import { JoinChat } from '../components/JoinChat'
+import React from "react";
+import { JoinChat } from "../components/JoinChat";
 
 export const StartChatPage = () => {
-  return (
-    <JoinChat/>
-  )
-}
+    return (
+        <>
+            <JoinChat />
+        </>
+    );
+};
