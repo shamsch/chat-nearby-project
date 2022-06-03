@@ -6,7 +6,6 @@ const { Server } = require("socket.io");
 const dotenv = require("dotenv");
 const { connection } = require("./database/db.js");
 
-
 //events
 const { createChat } = require("./event/createChat.js");
 const { messageSend } = require("./event/messageSend.js");
@@ -26,31 +25,36 @@ const server = http.createServer(app);
 connection(DB_USER, DB_PASS);
 
 const io = new Server(server, {
-	cors: {
-		origin: "*",
-	},
+    cors: {
+        origin: "*",
+    },
 });
 
 let userCount = 0;
 
 io.on("connection", (socket) => {
-	const { user, newUserCount } = onConnection(socket, userCount);
+    const { user, newUserCount } = onConnection(socket, userCount);
 
-	userCount = newUserCount;
-	io.emit("user_count", userCount);
+    userCount = newUserCount;
+    io.emit("user_count", userCount);
 
-	socket.on("create_chat", (data) => createChat(socket, data, user));
+    socket.on("create_chat", (data) => createChat(socket, data, user));
 
-	socket.on("message_send", (data) => messageSend(io, data));
+    socket.on("message_send", (data) => messageSend(io, data));
 
-	socket.on("self_typing", (data) => onTyping(io, data));
+    socket.on("self_typing", (data) => onTyping(io, data));
 
-	socket.on("disconnect", () => {
-		userCount = onDisconnect(io, socket, user, userCount);
+    socket.on("disconnect", () => {
+        userCount = onDisconnect(io, socket, user, userCount);
         io.emit("user_count", userCount);
-	});
+    });
 });
 
+//deployment
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static("client/build"));
+}
+
 server.listen(PORT, () => {
-	console.log("Server running on", PORT);
+    console.log("Server running on", PORT);
 });

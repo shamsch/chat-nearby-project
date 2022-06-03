@@ -20,7 +20,7 @@ const findAvailableUser = async (user) => {
             parseFloat(dbUser.y),
             parseFloat(dbUser.x)
         );
-        return dist<2 && dbUser.socketID != user.socketID;
+        return dist<15 && dbUser.socketID != user.socketID;
     });
 
     return closeByUser; 
