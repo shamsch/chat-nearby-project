@@ -52,7 +52,8 @@ io.on("connection", (socket) => {
 
 //deployment
 if (process.env.NODE_ENV === "production") {
-    app.use(express.static("client/build"));
+    console.log("Connecting front-end...")
+    app.use('/static', express.static(path.join(`${__dirname}/client/build`)));
 }
 
 server.listen(PORT, () => {
