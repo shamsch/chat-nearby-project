@@ -60,8 +60,6 @@ function Chat() {
     const secondUserRef = useRef();
     const scrollRef = useRef();
 
-    const navigate = useNavigate();
-
     useEffect(() => {
         socket.on("recieve_message", (data) => {
             console.log("got message:", data);
@@ -79,7 +77,6 @@ function Chat() {
         });
 
         socket.on("other_typing", (data) => {
-            console.log("got run", data.user !== selfIDRef.current);
 
             if (data.user !== selfIDRef.current) {
                 if (data.typing && !isTypingRef.current) {
@@ -101,6 +98,12 @@ function Chat() {
         socket.on("user_count", (data) => {
             setUserCount(data);
         });
+
+        return () => {
+            console.log("on component dismount removing all listeners")
+            socket.removeAllListeners();
+        }
+
     }, [socket, setAllMessage, setUserCount, setChatAlive]);
 
     //scroll into view effect
@@ -123,10 +126,12 @@ function Chat() {
             setSecondUser(chatRoom);
             secondUserRef.current = chatRoom;
         }
+
     }, [chatRoom, socket, selfID]);
 
     const sendMessage = async () => {
         const data = { message: msg, room: chatRoom, owner: selfID };
+        console.log("sending this message", data)
         await socket.emit("message_send", data);
         setMsg("");
     };
@@ -148,7 +153,22 @@ function Chat() {
     };
 
     const handleClick = () => {
-        navigate(0);
+        //set all states to default
+        clearAllMessage();
+        setChat(false);
+        setChatAlive(true);
+        setMsg("");
+        setChatRoom(null);
+        setSelfID(null);
+        setSecondUser(null);
+        setIsTyping(false);
+        //clear all the refs
+        isTypingRef.current = null;
+        selfIDRef.current = null;
+        secondUserRef.current = null;
+        //reconnect w/ the server, updates db as well
+        socket.disconnect();
+        socket.connect();
     };
 
     const listAllMessage = allMessage.map((content, index) => {
@@ -201,7 +221,7 @@ function Chat() {
                             <Button
                                 variant="outlined"
                                 color="error"
-								size="small"
+                                size="small"
                                 onClick={handleClick}
                             >
                                 End chat
@@ -217,8 +237,8 @@ function Chat() {
                                 User disconnected, to go back to start{" "}
                                 <Button
                                     variant="outlined"
-									color="secondary"
-									size="small"
+                                    color="secondary"
+                                    size="small"
                                     onClick={handleClick}
                                 >
                                     click here
@@ -226,7 +246,7 @@ function Chat() {
                             </Typography>
                         </Box>
                     )}
-                    <Divider sx={{marginTop: "10px"}} />
+                    <Divider sx={{ marginTop: "10px" }} />
                     {secondUser && (
                         <Grid container spacing={4} alignItems="center">
                             <Grid id="chat-window" xs={12} item>

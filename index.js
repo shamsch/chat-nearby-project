@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 3001;
 const DB_USER = process.env.DB_USER;
 const DB_PASS = process.env.DB_PASS;
 
-app.use(cors);
+app.use(cors());
 
 const server = http.createServer(app);
 connection(DB_USER, DB_PASS);
@@ -31,6 +31,10 @@ const io = new Server(server, {
 });
 
 let userCount = 0;
+
+app.use("/server", (req, res) => {
+    res.send({response: "Server running!"}).status(200)
+} )
 
 io.on("connection", (socket) => {
     const { user, newUserCount } = onConnection(socket, userCount);
@@ -51,9 +55,10 @@ io.on("connection", (socket) => {
 });
 
 //deployment
+console.log(process.env.NODE_ENV)
 if (process.env.NODE_ENV === "production") {
     console.log("Connecting front-end...")
-    app.use('/static', express.static(path.join(`${__dirname}/client/build`)));
+    app.use(express.static("client/build"));
 }
 
 server.listen(PORT, () => {
