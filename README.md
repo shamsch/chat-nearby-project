@@ -7,7 +7,7 @@ The idea with this React application is to use socket.io to create a real time c
 ## Front-end
 * **Framework**: React
 * **Styling**: CSS & Material UI 
-* **State Management**: Zustand (Omg, this library is hands-down the simplest for state management) 
+* **State Management**: Zustand
 * **Routing**: React router DOM library 
 * **
 ## Backend:
