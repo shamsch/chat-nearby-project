@@ -4,6 +4,9 @@ The idea with this React application is to use socket.io to create a real time c
 
 * **
 
+## Watch the demo video
+
+[![Demo video](https://res.cloudinary.com/marcomontalbano/image/upload/v1658268526/video_to_markdown/images/streamable--npjxuu-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://streamable.com/npjxuu "Demo video")
 ## Front-end
 * **Framework**: React
 * **Styling**: CSS & Material UI 
@@ -23,10 +26,13 @@ It is probably not the best implementation of this idea, but I guess it works fo
 ## Improvement:
 In no particular order: 
 * TypeScript :)  
-* Testing 
+* Testing (Update: in the React Native Version, yes!)
 * Formatting code 
 * CI/CD
-* React Native version? :D 
+* React Native version? :D (Update: Coming soon ...)
 * User database and authentication 
 * **
-### Live deployment: https://aqueous-tor-35882.herokuapp.com/
+### Live deployment: 
+Since it is hosted on free tier of Heroku, it will take longer to spin up so be patient and be sure to open it on multiple tabs or devices to test the chat functionality.
+
+## Link: https://aqueous-tor-35882.herokuapp.com/
